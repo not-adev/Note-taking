@@ -1,5 +1,7 @@
 import express from 'express';
 import { connectDB } from './helper/dbConnection.js';
+import { handleSignIn } from './API/SignIn.js';
+import { sendEmail } from './API/SendEmail.js';
 const app = express();
 connectDB() 
 app.use(express.json()); 
@@ -8,12 +10,10 @@ app.use(cookieParser());
 
 const port = 3000;
 
-app.post('/signin', (req, res) => {
-  res.send('Hello World!');
-});
-app.post('/signup', (req, res) => {
-  res.send('Hello World!');
-});
+app.post('/signin', handleSignIn);
+
+app.post('/otpVerification' ,sendEmail)
+app.post('/signup', handleSignUp);
 app.get('/logout', (req, res) => {
   res.send('Hello World!');
 });
