@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer"
 
 export function sendEmail(req, res) {
+    console.log("OTP VARification hi")
     try {
         const { email, OTP } = req.body;
         //  const transporter = nodemailer.createTransport({

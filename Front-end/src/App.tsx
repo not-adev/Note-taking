@@ -6,13 +6,13 @@ import Sign_up from './components/Sign-up';
 import Notes from './components/Notes';
 
 function App() {
-  
+
   return (
-  <Routes>
-        <Route path="/" element={<Sign_in/>} />
-        <Route path="/signup" element={<Sign_up />} />
-         <Route path="/notes" element={<Notes />} />
-      </Routes>
+    <Routes>
+      <Route path="/" element={<Sign_in />} />
+      <Route path="/signup" element={<Sign_up />} />
+      <Route path="/notes" element={<Notes />} />
+    </Routes>
 
   )
 }
