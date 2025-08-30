@@ -199,7 +199,7 @@ const Notes = () => {
                 <Skeleton height={70} />
               </div>
             }
-            {!loading && notes.map((note, index) => (
+            {!loading && notes.length < 1 ? <div>no notes yet   </div> :  notes.map((note, index) => (
               <li
                 key={index}
                 className="flex group  hover:flex-col  justify-between bg-gray-50 p-2 rounded-md shadow-sm"

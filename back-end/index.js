@@ -6,10 +6,10 @@ import { handleSignUp } from './API/SignUp.js';
 import cors from 'cors';
 
 import { handleGetData } from './API/Getdata.js';
-import { handleDeleteNotes } from './API/DeleteNotes.js';
+// import { handleDeleteNotes } from './API/DeleteNotes.js';
 import {handleGetNotes} from "./API/GetNotes.js" ;
 import {handleSignUp_with_Google} from './API/SignUpwithGoogle.js'
-import {handleAddNote} from "./API/AddNote.js"
+// import {handleAddNote} from "./API/AddNote.js"
 
 import { sendEmail } from './API/SendEmail.js';
 const app = express();
@@ -33,9 +33,9 @@ app.get('/logout', (req, res) => {
 });
 app.post("/signup_withGoogle",handleSignUp_with_Google)
 app.get('/getdata', handleGetData);
-app.post('/getNotes', handleGetNotes);
-app.post('/deletNote', handleDeleteNotes);
-app.post('/addNote', handleAddNote);
+app.get('/getNotes', handleGetNotes);
+// app.post('/deletNote', handleDeleteNotes);
+// app.post('/addNote', handleAddNote);
 
 
 
