@@ -154,7 +154,7 @@ const Notes = () => {
                 />
               </div>
               <div className=' space-x-3 flex'>
-                <button onClick={saveNote} className='bg-blue-500  border border-blue-500 w-full text-white text-xl hover:bg-blue-700 transition duration-400 rounded-md h-[50px]'> Save</button>
+                <button  className='bg-blue-500  border border-blue-500 w-full text-white text-xl hover:bg-blue-700 transition duration-400 rounded-md h-[50px]'> Save</button>
                 <button onClick={DiscardNote} className='bg-red-500  border border-red-600 w-full text-white text-xl hover:bg-red-700 transition duration-400 rounded-md h-[50px] '> Discard</button>
 
 
