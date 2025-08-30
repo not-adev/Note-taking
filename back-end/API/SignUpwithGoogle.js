@@ -10,7 +10,7 @@ export const handleSignUp_with_Google = async (req, res) => {
         let user = await User.findOne({ email });
         // Create and save new user
         if (!user) {
-
+            console.log("creating user ")
             user = new User({ email, name, picture });
             await user.save();
         }
@@ -18,14 +18,14 @@ export const handleSignUp_with_Google = async (req, res) => {
         const token = jwt.sign(
             { userId: user._id },
             process.env.JWT_SECRET || 'fakdkhowrr9uwer34583jdf',
-            { expiresIn: '7d' }
+            { expiresIn: '3d' }
         );
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            secure: true , 
+            sameSite: 'none',
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 7 days
             path: '/',
         });
 

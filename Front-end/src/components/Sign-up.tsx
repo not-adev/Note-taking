@@ -3,20 +3,26 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import type { GoogleUser } from '../types/googleRes';
 import type { ResFromApi } from '../types/resFromSignIn';
+const SignUpForm = React.lazy(() => import('./SignUpFor'));
 import { useNavigate } from 'react-router-dom';
-import { OrbitProgress } from 'react-loading-indicators';
 import { ToastContainer, toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import Skeleton from 'react-loading-skeleton';
+import { Suspense } from 'react';
+import 'react-loading-skeleton/dist/skeleton.css';
+
 
 
 
 
 const Sign_up = () => {
   const route = useNavigate()
+  const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false)
   const [otpGiven, setOtpGiven] = useState(false)
-  const callErrorToast = (e: string) => toast.error(e, { position: "top-right", })
-  const callSucessToast = (e: string) => toast.success(e, { position: "top-right", })
+  const callErrorToast = (e: String) => toast.error(e, { position: "top-center", })
+  const callSucessToast = (e: String) => toast.success(e, { position: "top-center", })
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -83,11 +89,22 @@ const Sign_up = () => {
         if (validate()) {
           console.log("nside if ")
           const randomFourDigit = Math.floor(1000 + Math.random() * 9000);
+          console.log(randomFourDigit)
           setOTP(randomFourDigit.toString())
+          toast.promise(
+            async () =>
+              await axios.post(`${import.meta.env.VITE_BACK_END_URL}/otpVerification`, {
+                email: formData.email,
+                OTP: randomFourDigit,
+              }),
+            {
+              pending: 'processing...',
+              success: 'OTP send successfully 🎉',
+              error: 'OTP cannt be send failed ❌',
+            }
+          );
 
-          // const res = await axios.post(`${import.meta.env.VITE_BACK_END_URL}/otpVerification`, { email: formData.email, OTP: randomFourDigit })
-          callSucessToast("OTP send to your Email ")
-          // console.log(res.data)
+
           setOtpGiven(true)
 
         }
@@ -105,23 +122,30 @@ const Sign_up = () => {
           })
         if (res.data.code == 1) {
           callSucessToast("Signup Completed moving to Sign In ")
-          route('/')
+          setTimeout(() => {
+
+            route('/')
+          }, 3000);
 
 
 
         }
         else if (res.data.code == 0) {
-          alert("User alredy exist please Sign In ")
-          route("/")
+          callSucessToast("User alredy exist please Sign In ")
+          setTimeout(() => {
+
+            route('/')
+          }, 3000);
+
         }
         else {
-          alert(res.data.message)
+          callErrorToast(res.data.message)
         }
 
       }
 
     } catch (error: any) {
-      alert(error)
+      callErrorToast(error)
       console.log(error)
     }
     finally {
@@ -137,6 +161,7 @@ const Sign_up = () => {
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
+        setLoading(true)
         const res = await axios.get<GoogleUser>('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: {
             Authorization: `Bearer ${tokenResponse.access_token}`,
@@ -160,16 +185,32 @@ const Sign_up = () => {
           {
             name: res.data.name,
             email: res.data.email,
-            picture : res.data.picture
+            picture: res.data.picture
 
           })
         if (back_end_call.data.code == 1) {
-          route("/notes")
+          callSucessToast("Sign In Completed")
+          setTimeout(() => {
+            route('/notes')
+          }, 1500);
+
+
+
+        }
+        else if (back_end_call.data.code == 0) {
+          callErrorToast("Google Sing Up not Working try another way")
+
+        }
+        else {
+          callErrorToast(back_end_call.data.message)
         }
 
 
       } catch (err) {
         console.error("Failed to fetch user info:", err);
+      }
+      finally {
+        setLoading(false)
       }
     },
     onError: () => {
@@ -195,7 +236,7 @@ const Sign_up = () => {
 
           </div>
         </div>
-        <div className="w-1/2  max-h-screen m-auto  relative flex flex-col justify-center items-center ">
+        <div className="w-[359px] md:h-[90%] m-auto  relative flex flex-col justify-center items-center ">
 
           <div className="text-center flex flex-col ">
             <div>
@@ -206,7 +247,25 @@ const Sign_up = () => {
                 Sign up to enjoy the feature of HD
               </div>
             </div>
-            <form onSubmit={handleSubmit}>
+            <Suspense fallback={
+              <div className="w-[359px] mx-auto mt-1 text-sm p-6 bg-white rounded-lg space-y-6">
+                <Skeleton height={40} />
+                <Skeleton height={40} />
+                <Skeleton height={40} />
+                <Skeleton height={54} />
+              </div>
+            }
+            >
+              <SignUpForm
+                handleSubmit={handleSubmit}
+                handleInput={handleInput}
+                formData={formData}
+                otpGiven={otpGiven}
+                loading={loading}
+              />
+            </Suspense>
+
+            {/* <form onSubmit={handleSubmit}>
               <div className="w-[359px] mx-auto mt-1 text-sm p-6 bg-white rounded-lg space-y-6 ">
 
                 <div className="relative  ">
@@ -272,31 +331,45 @@ const Sign_up = () => {
 
                     <input
 
-                      type="number"
+                      type={showPassword ? 'text' : 'password'}
                       name="OTP"
                       value={formData.OTP}
                       onChange={handleInput}
                       className="w-full border h-[40px] border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="OTP"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-2 top-2 text-xs text-blue-600 hover:underline"
+                    >
+                      {!showPassword ? <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" color='black' strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon  icon-tabler icons-tabler-outline icon-tabler-eye-off"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" /><path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" /><path d="M3 3l18 18" /></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" color='black' viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>}
+                    </button>
+
+
                   </div>
                 }
 
                 {
                   otpGiven &&
-                  <button type='submit' className='bg-blue-500  border border-blue-500 w-full text-white text-xl hover:bg-blue-700 transition duration-400 rounded-md h-[50px]'>Sign Up </button>
+                  <button disabled={loading} type='submit' className='bg-blue-500  border border-blue-500 w-full text-white text-xl hover:bg-blue-700 transition duration-400 rounded-md h-[50px]'>{loading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <OrbitProgress color="#ffffff" size="small" text="" textColor="" />
+                    </div>
+                  ) : 'Sign Up'}  </button>
                 }
 
               </div>
-            </form>
-                <button
-                  onClick={() => login()}
-                  className="flex m-auto items-center justify-center cursor-pointer w-[315px] h-[50px]  py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition duration-200 shadow-sm disabled:opacity-60"
-                >
+            </form> */}
 
-                <img src="https://i.pinimg.com/1200x/60/41/99/604199df880fb029291ddd7c382e828b.jpg" className='h-full ' alt="google" />
-                  Sign in with Google
-                </button>
+            <button
+              onClick={() => login()}
+              className="flex m-auto items-center justify-center cursor-pointer w-[315px] h-[50px]  py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 transition duration-200 shadow-sm disabled:opacity-60"
+            >
+
+              <img src="https://i.pinimg.com/1200x/60/41/99/604199df880fb029291ddd7c382e828b.jpg" className='h-full ' alt="google" />
+              Sign in with Google
+            </button>
             <div>
               Already have an account??<Link className='text-blue-500' to="/signin"> Sign In </Link>
             </div>

@@ -7,7 +7,7 @@ export const handleSignUp = async (req, res) => {
         if (!email || !name) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
-        console.log("hi from fdlflj")
+      
 
 
 
@@ -15,11 +15,13 @@ export const handleSignUp = async (req, res) => {
         let user = await User.findOne({ email });
 
         if (user) {
+            console.log("user alredy exist ")
             return res.status(200).json({ code: 0, error: 'user aredy exist' });
         }
 
         // Create and save new user
         user = new User({ email, name });
+        console.log("new user saved ")
         await user.save();
 
         return res.status(200).json({ code: 1, message: 'User created', id : user._id });
