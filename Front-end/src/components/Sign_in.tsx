@@ -5,7 +5,14 @@ import type { GoogleUser } from '../types/googleRes';
 import type { ResFromApi } from '../types/resFromSignIn';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
-const SignInForm = React.lazy(() => import('./SingInForm'));
+const SignInForm = React.lazy(() => {
+    return new Promise<typeof import('./SingInForm')>((resolve) => {
+        setTimeout(() => {
+            resolve(import('./SingInForm'));
+        }, 2000); // Simulate 2-second delay
+    });
+});
+
 import { ToastContainer, toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
@@ -96,18 +103,18 @@ const Sign_in = () => {
                     const randomFourDigit = Math.floor(1000 + Math.random() * 9000);
                     setOTP(randomFourDigit.toString())
                     console.log(randomFourDigit)
-                    toast.promise(
-                        async () =>
-                            await axios.post(`${import.meta.env.VITE_BACK_END_URL}/otpVerification`, {
-                                email: formData.email,
-                                OTP: randomFourDigit,
-                            }),
-                        {
-                            pending: 'processing...',
-                            success: 'OTP send successfully 🎉',
-                            error: 'OTP cannt be send failed ❌',
-                        }
-                    );
+                    // toast.promise(
+                    //     async () =>
+                    //         await axios.post(`${import.meta.env.VITE_BACK_END_URL}/otpVerification`, {
+                    //             email: formData.email,
+                    //             OTP: randomFourDigit,
+                    //         }),
+                    //     {
+                    //         pending: 'processing...',
+                    //         success: 'OTP send successfully 🎉',
+                    //         error: 'OTP cannt be send failed ❌',
+                    //     }
+                    // );
 
 
 
@@ -137,7 +144,10 @@ const Sign_in = () => {
                 }
                 else if (res.data.code == 0) {
                     callErrorToast("User does not exist please Sign Up ")
-                    route("/signup")
+                    setTimeout(() => {
+
+                        route("/signup")
+                    }, 1500);
                 }
                 else {
                     callErrorToast(res.data.message)
@@ -256,7 +266,7 @@ const Sign_in = () => {
                                 <div className="w-[359px] mx-auto mt-1 text-sm p-6 bg-white rounded-lg space-y-6">
                                     <Skeleton height={40} />
                                     <Skeleton height={40} />
-                                  
+
                                 </div>} >
                             <SignInForm
                                 handleCheck={handleCheck}

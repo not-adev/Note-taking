@@ -8,7 +8,7 @@ export const handleSignIn = async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ code: 0, message: 'User not found' });
+            return res.status(200).json({ code: 0, message: 'User not found' });
         }
 
         const token = jwt.sign(

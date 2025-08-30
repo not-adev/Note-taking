@@ -8,7 +8,6 @@ interface SignUpFormProps {
     sendOTP:  () => void; 
 
     formData: {
-       
         email: string;
         OTP: string;
 

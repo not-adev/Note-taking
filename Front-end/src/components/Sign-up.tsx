@@ -3,7 +3,15 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import type { GoogleUser } from '../types/googleRes';
 import type { ResFromApi } from '../types/resFromSignIn';
-const SignUpForm = React.lazy(() => import('./SignUpFor'));
+
+const SignUpForm = React.lazy(() => {
+  return new Promise<typeof import('./SignUpFor')>((resolve) => {
+    setTimeout(() => {
+      resolve(import('./SignUpFor'));
+    }, 2000); // Simulate 2-second delay
+  });
+});
+
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -17,7 +25,6 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const Sign_up = () => {
   const route = useNavigate()
-  const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false)
   const [otpGiven, setOtpGiven] = useState(false)
@@ -187,7 +194,7 @@ const Sign_up = () => {
             email: res.data.email,
             picture: res.data.picture
 
-          })
+          }, { withCredentials: true })
         if (back_end_call.data.code == 1) {
           callSucessToast("Sign In Completed")
           setTimeout(() => {

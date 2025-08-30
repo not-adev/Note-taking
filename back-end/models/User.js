@@ -4,6 +4,7 @@ let userSchema = new mongoose.Schema({
     email: String,
     name: String,
     picture: String,
+    notes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'note' }],
 
 })
 

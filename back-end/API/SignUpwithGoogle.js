@@ -23,9 +23,9 @@ export const handleSignUp_with_Google = async (req, res) => {
 
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true , 
+            secure: true,
             sameSite: 'none',
-            maxAge: 3 * 24 * 60 * 60 * 1000, // 7 days
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 7 days 
             path: '/',
         });
 

@@ -4,7 +4,12 @@ import { handleSignIn } from './API/SignIn.js';
 import cookieParser from 'cookie-parser';
 import { handleSignUp } from './API/SignUp.js';
 import cors from 'cors';
+
+import { handleGetData } from './API/Getdata.js';
+import { handleDeleteNotes } from './API/DeleteNotes.js';
+import {handleGetNotes} from "./API/GetNotes.js" ;
 import {handleSignUp_with_Google} from './API/SignUpwithGoogle.js'
+import {handleAddNote} from "./API/AddNote.js"
 
 import { sendEmail } from './API/SendEmail.js';
 const app = express();
@@ -27,12 +32,12 @@ app.get('/logout', (req, res) => {
   res.send('Hello World!');
 });
 app.post("/signup_withGoogle",handleSignUp_with_Google)
-app.post('/addNote', (req, res) => {
-  res.send('Hello World!');
-});
-app.post('/deleteNote', (req, res) => {
-  res.send('Hello World!');
-});
+app.get('/getdata', handleGetData);
+app.post('/getNotes', handleGetNotes);
+app.post('/deletNote', handleDeleteNotes);
+app.post('/addNote', handleAddNote);
+
+
 
 
 
